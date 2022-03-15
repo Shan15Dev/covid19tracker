@@ -6,7 +6,7 @@ import Chart from "chart.js/auto";
 const URL = "https://www.covid19.admin.ch/api/data/context";
 var today = new Date();
 var date =
-  today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
+  today.getFullYear() + "-" +("0" + (today.getMonth() + 1)).slice(-2) + "-" + today.getDate();
 export default function CasesCHLine() {
   const [cases, setCases] = useState([]);
   const [casesList, setCasesList] = useState([]);
@@ -22,15 +22,15 @@ export default function CasesCHLine() {
 
     const list = [];
     const casesSwitzerland = [];
-    const casesLiechtenstein = [];
     const casesZurich = [];
     for (let geoRegion of caseResponseJSON) {
-      if (geoRegion["geoRegion"] === "CH" && geoRegion["datum"] !== date) {
+      if (geoRegion["geoRegion"] === "CHFL" && geoRegion["datum"] !== date) {
         list.push(geoRegion);
         casesSwitzerland.push(geoRegion.entries);
-      } else if (geoRegion["geoRegion"] === "CHFL" && geoRegion["datum"] !== date) {
-        casesLiechtenstein.push(geoRegion.entries);
-      } else if (geoRegion["geoRegion"] === "ZH" && geoRegion["datum"] !== date) {
+      } else if (
+        geoRegion["geoRegion"] === "ZH" &&
+        geoRegion["datum"] !== date
+      ) {
         casesZurich.push(geoRegion.entries);
       }
     }
@@ -44,11 +44,6 @@ export default function CasesCHLine() {
           borderColor: "#a8d2ed",
         },
         {
-          label: "Covid Cases in Liechtenstein",
-          data: casesLiechtenstein,
-          borderColor: "green",
-        },
-        {
           label: "Covid Cases in Zurich",
           data: casesZurich,
           borderColor: "#68e86d",
@@ -56,6 +51,8 @@ export default function CasesCHLine() {
       ],
     });
   }, []);
+
+  console.log(date);
 
   return (
     <div>
