@@ -1,46 +1,67 @@
 import { useState, useEffect } from "react";
 import { Line } from "react-chartjs-2";
-import {CategoryScale} from 'chart.js'; 
-import Chart from 'chart.js/auto' 
+import { CategoryScale } from "chart.js";
+import Chart from "chart.js/auto";
 
 const URL = "https://www.covid19.admin.ch/api/data/context";
+var today = new Date();
+var date =
+  today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
 export default function CasesCHLine() {
   const [cases, setCases] = useState([]);
   const [casesList, setCasesList] = useState([]);
-  Chart.register(CategoryScale)
+  Chart.register(CategoryScale);
   useEffect(async () => {
     const response = await fetch(URL);
     const responseJSON = await response.json();
-    
+
     const caseResponse = await fetch(
       `${responseJSON["sources"]["individual"]["json"]["daily"]["cases"]}`
-      );
-      const caseResponseJSON = await caseResponse.json();
-      
-      const list = [];
-      const casesListItter = [];
+    );
+    const caseResponseJSON = await caseResponse.json();
+
+    const list = [];
+    const casesSwitzerland = [];
+    const casesLiechtenstein = [];
+    const casesZurich = [];
     for (let geoRegion of caseResponseJSON) {
-      if (geoRegion["geoRegion"] === "CH") {
+      if (geoRegion["geoRegion"] === "CH" && geoRegion["datum"] !== date) {
         list.push(geoRegion);
-        casesListItter.push(geoRegion.entries);
-      } 
+        casesSwitzerland.push(geoRegion.entries);
+      } else if (geoRegion["geoRegion"] === "CHFL" && geoRegion["datum"] !== date) {
+        casesLiechtenstein.push(geoRegion.entries);
+      } else if (geoRegion["geoRegion"] === "ZH" && geoRegion["datum"] !== date) {
+        casesZurich.push(geoRegion.entries);
+      }
     }
     setCases(list);
     setCasesList({
-      labels: list.map(i => i.datum),
+      labels: list.map((i) => i.datum),
       datasets: [
         {
-          label: 'My First dataset',
-          data: casesListItter
-        }
-      ]
-    })
+          label: "Covid Cases in Switzerland",
+          data: casesSwitzerland,
+          borderColor: "#a8d2ed",
+        },
+        {
+          label: "Covid Cases in Liechtenstein",
+          data: casesLiechtenstein,
+          borderColor: "green",
+        },
+        {
+          label: "Covid Cases in Zurich",
+          data: casesZurich,
+          borderColor: "#68e86d",
+        },
+      ],
+    });
   }, []);
 
   return (
     <div>
-      <h1>Covid Cases in Switzerland</h1>
-     { casesList.length != 0 && <Line data={casesList} width={400} height={400} />}
+      {casesList.length != 0 && (
+        <Line data={casesList} width={400} height={400} />
+      )}
     </div>
   );
 }
