@@ -16,3 +16,17 @@ a {
   box-sizing: border-box;
   background-color: #2b2d2e;
 }
+
+
+.menu{
+  display: grid;
+  grid-template-columns: 9fr 1fr;
+  grid-gap: 20px;
+}
+
+.logo{
+  width: 50%;
+  height: 10px;
+  object-fit: scale-down;
+  object-position: bottom;
+}
