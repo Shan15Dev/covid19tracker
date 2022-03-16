@@ -52,7 +52,6 @@ export default function CasesCHLine() {
     });
   }, []);
 
-  console.log(date);
 
   return (
     <div>
